@@ -53,6 +53,9 @@ function reload() {
         dst.push(Math.trunc(h));
         dst.push(Math.trunc(s));
         dst.push(Math.trunc(v));
+        if ((i / 4) % dw === dw - 1) {
+            dst.push('r');
+        }
     }
 
     pixelDataOutput.value = dst.toString();
