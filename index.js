@@ -35,11 +35,11 @@ function reload() {
         let h = 0;
         if (mm !== 0) {
             if (r > g && r > b) {
-                h = (g - b) / mm / 6;
+                h = (g - b) / mm / 6 * 100;
             } else if (g > r && g > b) {
-                h = 1 / 3 + (b - r) / mm / 6;
+                h = 1 / 3 + (b - r) / mm / 6 * 100;
             } else {
-                h = 2 / 3 + (r - g) / mm / 6;
+                h = 2 / 3 + (r - g) / mm / 6 * 100;
             }
         }
         let s = 0;
