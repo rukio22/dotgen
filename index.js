@@ -42,6 +42,9 @@ function reload() {
                 h = 2 / 3 + (r - g) / mm / 6 * 100;
             }
         }
+        if (h < 0) {
+            h += 100;
+        }
         let s = 0;
         if (max !== 0) {
             s = mm / max * 100;
