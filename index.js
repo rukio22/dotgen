@@ -17,8 +17,8 @@ function reload() {
     const w = img.width;
     const h = img.height;
     const ave = range.value;
-    const dw = w / ave;
-    const dh = h / ave;
+    const dw = Math.trunc(w / ave);
+    const dh = Math.trunc(h / ave);
     previewCanvas.width = dw;
     previewCanvas.height = dh;
     ctx.drawImage(img, 0, 0, dw, dh);
