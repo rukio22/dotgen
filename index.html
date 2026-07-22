@@ -276,10 +276,40 @@
 
         .copy-range-control {
             display: grid;
-            grid-template-columns: auto auto;
-            align-items: center;
-            gap: 5px 10px;
+            gap: 7px;
             min-width: 210px;
+        }
+
+        .stepper {
+            display: grid;
+            grid-template-columns: 30px minmax(70px, 1fr) 30px;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .step-button {
+            width: 30px;
+            height: 30px;
+            padding: 0;
+            color: var(--primary-dark);
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            background: #fff;
+            border: 1px solid #c9ddf6;
+            border-radius: 7px;
+        }
+
+        .step-button:hover {
+            background: var(--primary-soft);
+            border-color: var(--primary);
+        }
+
+        .step-button:disabled {
+            color: #aab5c2;
+            cursor: not-allowed;
+            background: #f4f6f8;
+            border-color: var(--border);
         }
 
         .copy-range-control label {
@@ -481,15 +511,29 @@
                             <div class="copy-row-controls">
                                 <div class="copy-range-control">
                                     <label for="copyStartRow">開始行</label>
-                                    <output
-                                        id="copyStartRowValue"
-                                        for="copyStartRow"
-                                    >0行目</output>
+                                    <div class="stepper">
+                                        <button
+                                            class="step-button"
+                                            id="copyStartRowMinus"
+                                            type="button"
+                                            aria-label="開始行を1減らす"
+                                        >−</button>
+                                        <output
+                                            id="copyStartRowValue"
+                                            for="copyStartRow"
+                                        >0行目</output>
+                                        <button
+                                            class="step-button"
+                                            id="copyStartRowPlus"
+                                            type="button"
+                                            aria-label="開始行を1増やす"
+                                        >＋</button>
+                                    </div>
                                     <input
                                         id="copyStartRow"
                                         type="range"
                                         min="0"
-                                        max="200"
+                                        max="63"
                                         value="0"
                                         step="1"
                                     >
@@ -497,10 +541,24 @@
 
                                 <div class="copy-range-control">
                                     <label for="copyRowCount">コピーする行数</label>
-                                    <output
-                                        id="copyRowCountValue"
-                                        for="copyRowCount"
-                                    >8行</output>
+                                    <div class="stepper">
+                                        <button
+                                            class="step-button"
+                                            id="copyRowCountMinus"
+                                            type="button"
+                                            aria-label="コピーする行数を1減らす"
+                                        >−</button>
+                                        <output
+                                            id="copyRowCountValue"
+                                            for="copyRowCount"
+                                        >8行</output>
+                                        <button
+                                            class="step-button"
+                                            id="copyRowCountPlus"
+                                            type="button"
+                                            aria-label="コピーする行数を1増やす"
+                                        >＋</button>
+                                    </div>
                                     <input
                                         id="copyRowCount"
                                         type="range"
@@ -538,6 +596,10 @@
         const copyStartRowValue = document.getElementById("copyStartRowValue");
         const copyRowCount = document.getElementById("copyRowCount");
         const copyRowCountValue = document.getElementById("copyRowCountValue");
+        const copyStartRowMinus = document.getElementById("copyStartRowMinus");
+        const copyStartRowPlus = document.getElementById("copyStartRowPlus");
+        const copyRowCountMinus = document.getElementById("copyRowCountMinus");
+        const copyRowCountPlus = document.getElementById("copyRowCountPlus");
 
         function updateRange() {
             const min = Number(pixelRange.min);
@@ -559,12 +621,29 @@
             output.textContent = `${value}${suffix}`;
         }
 
+        function updateButtons(slider, minusButton, plusButton) {
+            const value = Number(slider.value);
+            minusButton.disabled = value <= Number(slider.min);
+            plusButton.disabled = value >= Number(slider.max);
+        }
+
+        function changeSlider(slider, amount, updateFunction) {
+            const nextValue = Math.min(
+                Number(slider.max),
+                Math.max(Number(slider.min), Number(slider.value) + amount)
+            );
+            slider.value = String(nextValue);
+            updateFunction();
+        }
+
         function updateCopyStartRow() {
             updateCopySlider(copyStartRow, copyStartRowValue, "行目");
+            updateButtons(copyStartRow, copyStartRowMinus, copyStartRowPlus);
         }
 
         function updateCopyRowCount() {
             updateCopySlider(copyRowCount, copyRowCountValue, "行");
+            updateButtons(copyRowCount, copyRowCountMinus, copyRowCountPlus);
         }
 
         pixelRange.addEventListener("input", updateRange);
@@ -573,6 +652,11 @@
         copyStartRow.addEventListener("change", updateCopyStartRow);
         copyRowCount.addEventListener("input", updateCopyRowCount);
         copyRowCount.addEventListener("change", updateCopyRowCount);
+
+        copyStartRowMinus.addEventListener("click", () => changeSlider(copyStartRow, -1, updateCopyStartRow));
+        copyStartRowPlus.addEventListener("click", () => changeSlider(copyStartRow, 1, updateCopyStartRow));
+        copyRowCountMinus.addEventListener("click", () => changeSlider(copyRowCount, -1, updateCopyRowCount));
+        copyRowCountPlus.addEventListener("click", () => changeSlider(copyRowCount, 1, updateCopyRowCount));
 
         updateRange();
         updateCopyStartRow();

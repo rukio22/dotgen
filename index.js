@@ -10,6 +10,11 @@ const pixelDataOutput = document.getElementById('pixelDataOutput');
 const startRow = document.getElementById('copyStartRow');
 const rowCount = document.getElementById('copyRowCount');
 
+const startRowMinus = document.getElementById('copyStartRowMinus');
+const startRowPlus = document.getElementById('copyStartRowPlus');
+const rowCountMinus = document.getElementById('copyRowCountMinus');
+const rowCountPlus = document.getElementById('copyRowCountPlus');
+
 const copyButton = document.getElementById('copyButton');
 
 const img = new Image();
@@ -76,6 +81,10 @@ imageInput.addEventListener('change', (_) => {
 range.addEventListener('change', (_) => reload())
 startRow.addEventListener('change', (_) => reload())
 rowCount.addEventListener('change', (_) => reload())
+startRowMinus.addEventListener('click', (_) => reload());
+startRowPlus.addEventListener('click', (_) => reload());
+rowCountMinus.addEventListener('click', (_) => reload());
+rowCountPlus.addEventListener('click', (_) => reload());
 
 copyButton.addEventListener('click', (_) => navigator.clipboard.writeText(pixelDataOutput.value));
 
