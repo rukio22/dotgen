@@ -50,15 +50,15 @@ function reload() {
             s = mm / max * 100;
         }
         const v = max / 255 * 100;
-        dst.push(Math.trunc(h));
-        dst.push(Math.trunc(s));
-        dst.push(Math.trunc(v));
+        dst.push(Math.trunc(h).toString().padStart(3, '0'));
+        dst.push(Math.trunc(s).toString().padStart(3, '0'));
+        dst.push(Math.trunc(v).toString().padStart(3, '0'));
         if ((i / 4) % dw === dw - 1) {
-            dst.push('r');
+            dst.push('rrr');
         }
     }
 
-    pixelDataOutput.value = dst.toString();
+    pixelDataOutput.value = dst.toString().replaceAll(',', '');
 }
 
 imageInput.addEventListener('change', (_) => {
