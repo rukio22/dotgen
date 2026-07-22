@@ -262,6 +262,67 @@
             image-rendering: pixelated;
         }
 
+        .copy-controls {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .copy-row-controls {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(180px, 1fr));
+            gap: 14px;
+        }
+
+        .copy-range-control {
+            display: grid;
+            grid-template-columns: auto auto;
+            align-items: center;
+            gap: 5px 10px;
+            min-width: 210px;
+        }
+
+        .copy-range-control label {
+            color: var(--muted);
+            font-size: 0.74rem;
+            font-weight: 700;
+        }
+
+        .copy-range-control output {
+            color: var(--primary-dark);
+            font-family: Consolas, monospace;
+            font-size: 0.74rem;
+            font-weight: 700;
+            text-align: right;
+        }
+
+        .copy-range-control input[type="range"] {
+            grid-column: 1 / -1;
+            width: 100%;
+            height: 18px;
+        }
+
+        .copy-range-control input[type="range"]::-webkit-slider-runnable-track {
+            height: 5px;
+        }
+
+        .copy-range-control input[type="range"]::-moz-range-track {
+            height: 5px;
+        }
+
+        .copy-range-control input[type="range"]::-webkit-slider-thumb {
+            width: 18px;
+            height: 18px;
+            margin-top: -6.5px;
+            border-width: 4px;
+        }
+
+        .copy-range-control input[type="range"]::-moz-range-thumb {
+            width: 10px;
+            height: 10px;
+            border-width: 4px;
+        }
+
         .copy-button {
             padding: 8px 12px;
             color: var(--primary-dark);
@@ -313,6 +374,20 @@
 
             .settings {
                 padding: 16px;
+            }
+
+            .copy-controls {
+                width: 100%;
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .copy-row-controls {
+                grid-template-columns: 1fr;
+            }
+
+            .copy-range-control {
+                min-width: 0;
             }
 
             .preview-area {
@@ -402,23 +477,55 @@
                     <div class="card-header">
                         <h2 class="card-title">ピクセルデータ</h2>
 
-                        <button
-                            class="copy-button"
-                            id="copyButton"
-                            type="button"
-                        >
-                            コピー
-                        </button>
+                        <div class="copy-controls">
+                            <div class="copy-row-controls">
+                                <div class="copy-range-control">
+                                    <label for="copyStartRow">開始行</label>
+                                    <output
+                                        id="copyStartRowValue"
+                                        for="copyStartRow"
+                                    >0行目</output>
+                                    <input
+                                        id="copyStartRow"
+                                        type="range"
+                                        min="0"
+                                        max="200"
+                                        value="0"
+                                        step="1"
+                                    >
+                                </div>
+
+                                <div class="copy-range-control">
+                                    <label for="copyRowCount">コピーする行数</label>
+                                    <output
+                                        id="copyRowCountValue"
+                                        for="copyRowCount"
+                                    >8行</output>
+                                    <input
+                                        id="copyRowCount"
+                                        type="range"
+                                        min="1"
+                                        max="64"
+                                        value="8"
+                                        step="1"
+                                    >
+                                </div>
+                            </div>
+
+                            <button
+                                class="copy-button"
+                                id="copyButton"
+                                type="button"
+                            >
+                                コピー
+                            </button>
+                        </div>
                     </div>
 
                     <textarea
                         class="data-output"
                         id="pixelDataOutput"
                         readonly
-                        placeholder="[
-  [[24, 18, 42], [51, 42, 96]],
-  [[30, 25, 54], [72, 60, 128]]
-]"
                     ></textarea>
                 </section>
             </div>
@@ -427,6 +534,10 @@
     <script>
         const pixelRange = document.getElementById("pixelRange");
         const pixelRangeValue = document.getElementById("pixelRangeValue");
+        const copyStartRow = document.getElementById("copyStartRow");
+        const copyStartRowValue = document.getElementById("copyStartRowValue");
+        const copyRowCount = document.getElementById("copyRowCount");
+        const copyRowCountValue = document.getElementById("copyRowCountValue");
 
         function updateRange() {
             const min = Number(pixelRange.min);
@@ -438,13 +549,36 @@
             pixelRangeValue.textContent = `${value} × ${value} px`;
         }
 
+        function updateCopySlider(slider, output, suffix) {
+            const min = Number(slider.min);
+            const max = Number(slider.max);
+            const value = Number(slider.value);
+            const progress = ((value - min) / (max - min)) * 100;
+
+            slider.style.setProperty("--range-progress", `${progress}%`);
+            output.textContent = `${value}${suffix}`;
+        }
+
+        function updateCopyStartRow() {
+            updateCopySlider(copyStartRow, copyStartRowValue, "行目");
+        }
+
+        function updateCopyRowCount() {
+            updateCopySlider(copyRowCount, copyRowCountValue, "行");
+        }
+
         pixelRange.addEventListener("input", updateRange);
         pixelRange.addEventListener("change", updateRange);
+        copyStartRow.addEventListener("input", updateCopyStartRow);
+        copyStartRow.addEventListener("change", updateCopyStartRow);
+        copyRowCount.addEventListener("input", updateCopyRowCount);
+        copyRowCount.addEventListener("change", updateCopyRowCount);
 
         updateRange();
+        updateCopyStartRow();
+        updateCopyRowCount();
     </script>
-    <script src="./index.js"></script>
-
+    <script src="index.js"></script>
 </body>
 
 </html>

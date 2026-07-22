@@ -7,6 +7,9 @@ const range = document.getElementById('pixelRange');
 
 const pixelDataOutput = document.getElementById('pixelDataOutput');
 
+const startRow = document.getElementById('copyStartRow');
+const rowCount = document.getElementById('copyRowCount');
+
 const copyButton = document.getElementById('copyButton');
 
 const img = new Image();
@@ -23,9 +26,11 @@ function reload() {
     previewCanvas.height = dh;
     ctx.drawImage(img, 0, 0, dw, dh);
 
+    const start = Math.trunc(copyStartRow.value);
+    const count = Math.trunc(copyRowCount.value);
     const src = ctx.getImageData(0, 0, dw, dh);
     const dst = [];
-    for (let i = 0; i < src.data.length; i += 4) {
+    for (let i = start * dw * 4; i < (start + count) * dw * 4 && i < src.data.length; i += 4) {
         const r = src.data[i + 0];
         const g = src.data[i + 1];
         const b = src.data[i + 2];
@@ -69,6 +74,8 @@ imageInput.addEventListener('change', (_) => {
     img.onload = reload;
 });
 range.addEventListener('change', (_) => reload())
+startRow.addEventListener('change', (_) => reload())
+rowCount.addEventListener('change', (_) => reload())
 
 copyButton.addEventListener('click', (_) => navigator.clipboard.writeText(pixelDataOutput.value));
 
